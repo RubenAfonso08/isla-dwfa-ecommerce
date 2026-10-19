@@ -11,7 +11,13 @@ EN: one line per decision — what, why, rejected alternative. Grows ficha by fi
 
 ## Ficha 02 — modelos · models
 
-<!-- três decisões: um on_delete, uma constraint, JSONB sim/não · three decisions: one on_delete, one constraint, JSONB yes/no -->
+<!-- três decisões: um on_delete, uma constraint, JSONB sim/não · three decisions: one on_delete, one constraint, JSONB yes/no 
+
+--`Product.category` utiliza `PROTECT': impede a eliminação de categorias ainda referenciadas por produtos; não usei `CASCADE` para evitar eliminar o catálogo acidentalmente.
+
+- `Product.sku` tem uma `UniqueConstraint` e `Product.price` uma `CheckConstraint`: a base de dados garante SKUs únicos e preços não negativos mesmo quando a escrita não passa por um formulário.
+
+-  Não utilizei `JSONB`: Os dados do domínio da loja, como produtos, categorias, encomendas e pagamentos, possuem uma estrutura definida e relações explícitas entre entidades. Por esse motivo, optei por utilizar campos tipados e relações relacionais, evitando a utilização de JSONB.
 
 ## Ficha 02 — API
 
