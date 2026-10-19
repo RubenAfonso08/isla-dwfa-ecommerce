@@ -21,4 +21,14 @@ EN: one line per decision — what, why, rejected alternative. Grows ficha by fi
 
 ## Ficha 02 — API
 
-<!-- -->
+<!--
+- Campos só de leitura: IDs, timestamps, estado da encomenda, total calculado e preço unitário do artigo são controlados pelo servidor, evitando que o cliente altere dados derivados ou de controlo.
+
+- Paginação: utilizei `PageNumberPagination` com 20 resultados por página, permitindo percorrer coleções de recursos sem devolver todos os registos numa única resposta.
+
+- Versionamento: utilizei o prefixo `/api/v1/`, explícito nos URLs e preparado para permitir uma versão futura com alterações incompatíveis.
+
+- Consultas: a listagem de encomendas usa `select_related`, `prefetch_related` e `annotate` para evitar o problema N+1; o teste limita a listagem a três queries.
+
+- Validação: os serializers apresentam erros de validação antes da escrita, enquanto as constraints da base de dados mantêm a integridade dos dados independentemente do caminho de escrita.
+ -->
