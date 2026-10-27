@@ -48,7 +48,7 @@ class Command(BaseCommand):
             stock=50,
         )
 
-        monitor = ProductFactory(
+        ProductFactory(
             sku="SKU-MONITOR-001",
             category=technology,
             name="Monitor",
@@ -112,7 +112,5 @@ class Command(BaseCommand):
         )
 
         self.stdout.write(
-            self.style.SUCCESS(
-                "Seed concluído. Dados de demonstração confirmados ou criados."
-            )
+            self.style.SUCCESS("Seed concluído. Dados de demonstração confirmados ou criados.")
         )

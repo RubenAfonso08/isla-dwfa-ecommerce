@@ -50,9 +50,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def validate_price(self, value):
         """Valida o preço de um produto."""
         if value < Decimal("0.00"):
-            raise serializers.ValidationError(
-                "O preço não pode ser negativo."
-            )
+            raise serializers.ValidationError("O preço não pode ser negativo.")
 
         return value
 
@@ -101,9 +99,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
     def validate_quantity(self, value):
         """Valida a quantidade de um artigo."""
         if value <= 0:
-            raise serializers.ValidationError(
-                "A quantidade tem de ser superior a zero."
-            )
+            raise serializers.ValidationError("A quantidade tem de ser superior a zero.")
 
         return value
 
@@ -124,21 +120,14 @@ class OrderItemSerializer(serializers.ModelSerializer):
         errors = {}
 
         if order and order.status != Order.Status.PENDING:
-            errors["order"] = (
-                "Só é possível adicionar artigos a encomendas pendentes."
-            )
+            errors["order"] = "Só é possível adicionar artigos a encomendas pendentes."
 
         if product and not product.is_active:
             errors["product"] = "O produto não está ativo."
 
-        if (
-            product
-            and quantity is not None
-            and quantity > product.stock
-        ):
+        if product and quantity is not None and quantity > product.stock:
             errors["quantity"] = (
-                f"Stock insuficiente. Existem apenas "
-                f"{product.stock} unidades disponíveis."
+                f"Stock insuficiente. Existem apenas {product.stock} unidades disponíveis."
             )
 
         if errors:
@@ -188,6 +177,7 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             "id",
+            "customer",
             "status",
             "customer_username",
             "items",

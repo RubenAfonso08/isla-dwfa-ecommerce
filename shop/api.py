@@ -14,11 +14,7 @@ def problem_details_handler(exc, context):
         "type": "about:blank",
         "title": response.status_text,
         "status": response.status_code,
-        "errors": (
-            detail
-            if isinstance(detail, dict)
-            else {"detail": detail}
-        ),
+        "errors": (detail if isinstance(detail, dict) else {"detail": detail}),
     }
 
     response.content_type = "application/problem+json"

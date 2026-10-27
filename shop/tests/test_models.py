@@ -33,9 +33,7 @@ def test_category_product_count_uses_at_most_two_queries(
 
     with django_assert_max_num_queries(2):
         categories = list(
-            Category.objects.annotate(
-                product_count=Count("products")
-            ).order_by("name")
+            Category.objects.annotate(product_count=Count("products")).order_by("name")
         )
 
     assert len(categories) == 1

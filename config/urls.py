@@ -5,7 +5,9 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
 
+from accounts.views import MeView, ThrottledTokenObtainPairView
 from core.views import health
 from shop.views import (
     CategoryViewSet,
@@ -15,7 +17,6 @@ from shop.views import (
     PaymentViewSet,
     ProductViewSet,
 )
-
 
 router = DefaultRouter()
 
@@ -54,10 +55,25 @@ router.register(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health/", health, name="health"),
-
     # API REST versionada
     path("api/v1/", include(router.urls)),
-
+    # Autenticação JWT
+    path(
+        "api/v1/auth/token/",
+        ThrottledTokenObtainPairView.as_view(),
+        name="token_obtain_pair",
+    ),
+    path(
+        "api/v1/auth/token/refresh/",
+        TokenRefreshView.as_view(),
+        name="token_refresh",
+    ),
+    # Dados do utilizador autenticado
+    path(
+        "api/v1/me/",
+        MeView.as_view(),
+        name="me",
+    ),
     # Documentação OpenAPI e interface Swagger
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

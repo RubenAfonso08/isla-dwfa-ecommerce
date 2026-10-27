@@ -71,10 +71,7 @@ class PaymentFactory(factory.django.DjangoModelFactory):
     order = factory.SubFactory(OrderFactory)
     amount = factory.LazyAttribute(
         lambda obj: sum(
-            (
-                item.quantity * item.unit_price
-                for item in obj.order.items.all()
-            ),
+            (item.quantity * item.unit_price for item in obj.order.items.all()),
             Decimal("0.00"),
         )
     )

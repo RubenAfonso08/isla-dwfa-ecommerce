@@ -4,6 +4,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from shop.factories import (
+    CustomerFactory,
     OrderFactory,
     OrderItemFactory,
     ProductFactory,
@@ -16,13 +17,20 @@ def test_order_list_is_paginated_without_n_plus_one(
     django_assert_max_num_queries,
 ):
     # Criadas 25 encomendas, cada uma com 3 artigos.
-    for order in OrderFactory.create_batch(25):
+    customer = CustomerFactory()
+
+    for order in OrderFactory.create_batch(
+        25,
+        customer=customer,
+    ):
         OrderItemFactory.create_batch(3, order=order)
 
+    # A listagem de encomendas exige autenticação.
     client = APIClient()
+    client.force_authenticate(user=customer.user)
 
-    # COUNT + encomendas + artigos (com os produtos relacionados).
-    with django_assert_max_num_queries(3):
+    # COUNT + encomendas + artigos + consulta de permissões de gestor.
+    with django_assert_max_num_queries(4):
         response = client.get("/api/v1/orders/")
 
     assert response.status_code == 200
@@ -44,7 +52,9 @@ def test_create_order_item_returns_201_and_saves_price():
         price=Decimal("19.90"),
     )
 
+    # Só o proprietário da encomenda ou um gestor pode adicionar artigos.
     client = APIClient()
+    client.force_authenticate(user=order.customer.user)
 
     response = client.post(
         "/api/v1/order-items/",
@@ -74,6 +84,7 @@ def test_create_order_item_with_insufficient_stock_returns_400():
     product = ProductFactory(stock=1)
 
     client = APIClient()
+    client.force_authenticate(user=order.customer.user)
 
     response = client.post(
         "/api/v1/order-items/",
