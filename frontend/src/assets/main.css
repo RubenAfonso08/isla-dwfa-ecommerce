@@ -1,0 +1,31 @@
+/* Mínimo, de propósito · deliberately minimal: a ficha é sobre Vue + TS, não CSS. */
+:root {
+  --color-text: #2b2b2b;
+  --color-text-soft: #6b6b6b;
+  --color-border: #ddd;
+  --color-accent: #5b1f2e;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+#app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+button {
+  font: inherit;
+  padding: 0.35rem 0.75rem;
+}
