@@ -70,6 +70,21 @@ ASGI_APPLICATION = "config.asgi.application"
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
+# Redis e Celery · Ficha 05
+REDIS_URL = env("REDIS_URL", default="redis://localhost:6379")
+
+CELERY_BROKER_URL = f"{REDIS_URL}/0"
+CELERY_RESULT_BACKEND = f"{REDIS_URL}/0"
+CELERY_TASK_ACKS_LATE = True
+
+# Cache do Django em Redis (base de dados /1)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"{REDIS_URL}/1",
+    }
+}
+
 # Modelo de utilizador próprio desde o primeiro dia · custom user model from day one
 AUTH_USER_MODEL = "accounts.User"
 

@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from accounts.views import MeView, ThrottledTokenObtainPairView
 from core.views import health
+from shop.reports import OrdersReportView, TaskStatusView
 from shop.views import (
     CategoryViewSet,
     CustomerViewSet,
@@ -55,8 +56,22 @@ router.register(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health/", health, name="health"),
+
     # API REST versionada
     path("api/v1/", include(router.urls)),
+
+    # Relatórios e estado das tarefas assíncronas · Ficha 05
+    path(
+        "api/v1/reports/orders/",
+        OrdersReportView.as_view(),
+        name="orders-report",
+    ),
+    path(
+        "api/v1/tasks/<str:task_id>/",
+        TaskStatusView.as_view(),
+        name="task-status",
+    ),
+
     # Autenticação JWT
     path(
         "api/v1/auth/token/",
@@ -68,12 +83,14 @@ urlpatterns = [
         TokenRefreshView.as_view(),
         name="token_refresh",
     ),
+
     # Dados do utilizador autenticado
     path(
         "api/v1/me/",
         MeView.as_view(),
         name="me",
     ),
+
     # Documentação OpenAPI e interface Swagger
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

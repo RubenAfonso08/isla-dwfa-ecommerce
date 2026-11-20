@@ -51,3 +51,12 @@ EN: one line per decision — what, why, rejected alternative. Grows ficha by fi
 | `GET /api/v1/me/` | 401 | 200 | 200 |
 
 - **Teste de segurança:** sem o filtro do `get_queryset`, um cliente poderia obter a encomenda de outra pessoa e a resposta poderia confirmar a sua existência através de um `403`. O filtro faz com que essa encomenda não seja encontrada e resulte em `404`.
+
+
+## Ficha 05 — tarefas assíncronas e relatórios
+
+- **Recibo idempotente:** a tarefa recebe apenas o ID da encomenda, bloqueia a linha do pagamento com `select_for_update` e verifica `receipt_sent_at`; depois do envio grava a data, evitando novos envios em reexecuções normais da mesma tarefa. O Redis entrega tarefas pelo menos uma vez, pelo que não se assume uma garantia absoluta de envio exatamente uma vez perante falhas entre o envio externo e o commit da base de dados.
+- **Agendamento após o commit:** `pay_order` regista a tarefa através de `transaction.on_commit`, para que o worker não tente emitir um recibo antes de o pagamento e o estado da encomenda ficarem persistidos.
+- **Proprietário do relatório:** o ID do utilizador que pediu o relatório fica na cache Redis, na chave `task:<id>:owner`, com validade de uma hora; apenas esse utilizador ou um membro do grupo `gestores` pode consultar o estado. Os restantes recebem `404` para não revelar a existência de tarefas alheias.
+- **Redis:** a base `/0` é usada pelo broker e backend de resultados do Celery; a base `/1` é usada pela cache do Django. Nos testes, Celery usa execução eager e a cache local em memória, sem exigir Redis.
+- **Execução local:** API: `uv run python manage.py runserver`; worker: `uv run celery -A config worker -l info --pool=solo`.

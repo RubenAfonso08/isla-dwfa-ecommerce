@@ -5,6 +5,7 @@ from django.db.models import DecimalField, ExpressionWrapper, F, Sum
 from rest_framework.exceptions import APIException
 
 from .models import Order, OrderItem, Payment
+from .tasks import send_order_receipt
 
 
 class OrderPaymentConflict(APIException):
@@ -59,5 +60,8 @@ def pay_order(order):
 
     order.status = Order.Status.PAID
     order.save(update_fields=["status", "updated_at"])
+
+    order_id = order.pk
+    transaction.on_commit(lambda: send_order_receipt.delay(order_id))
 
     return order
